@@ -1,0 +1,2040 @@
+<!-- DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" -->
+<html>
+	<head>
+	    <style type="text/css">
+	    
+	        div#map-div { height: 100%; width: 100%; }
+
+			button { cursor: pointer; }
+			button.left { float: left; }
+			button.right { float: right; }
+						
+			div.addressPoint { height:30px;padding:4px; }
+			div.addressPoint button { height:30px; }
+			div.addressPoint input { height:30px;width:315px;padding-left:5px;margin-left:3px; }
+			div.addressPoint select { padding:0px;border:0px;width:95px;border:1px solid;padding:6px; }
+			div.addressPoint button.left { float:left; }
+			div.addressPoint button.right { float:right; }
+			
+			div.smallText { font-family:'Lucida Console';font-size:12px; }
+			div.mediumText { font-family:'Lucida Console';font-size:13px; }
+			div.largeText { font-family:'Lucida Console';font-size:15px; }
+			select.mediumText { font-family:'Lucida Console';font-size:13px; }
+			button.mediumText { font-family:'Lucida Console';font-size:13px; }
+			button.smallText { font-family:'Lucida Console';font-size:12px; }
+			input.largeText { font-family:'Lucida Console';font-size:15px; }
+			
+			div.frameBox { z-index:2000;position:absolute; }
+			
+			div.backgroundBox { background:#fff;float:left;padding:0px;font-family:'Lucida Console';height:44px;z-index:2000; }
+			div.backgroundBox1 { background:#ddc6e4;float:left;padding:0px;font-family:'Lucida Console';height:44px;z-index:2000; }
+			div.backgroundBox2 { background:#f6d093;float:left;padding:0px;font-family:'Lucida Console';height:44px;z-index:2000; }
+			div.backgroundBox3 { background:#cdf694;float:left;padding:0px;font-family:'Lucida Console';height:44px;z-index:2000; }
+			
+			div.singleBorder { border:1px solid; }
+			div.doubleBorder { border:2px solid; }
+			div.threeDoubleBorder { border-top:0px;border-bottom:2px solid;border-right:2px solid;border-left:2px solid; }
+			
+			div.label { padding:4px 0px; }
+			div.info { padding:4px 0px; }
+			div.heading { padding:6px 0px; }
+
+			div#environments {
+				background: none repeat scroll 0 0 #F0F0F0;
+				border: 2px solid #CCCCCC;
+				font-family: sans-serif;
+				font-weight: bold;
+				padding: 6px;
+				position: absolute;
+				right: 8px;
+				top: 46px;
+				z-index: 999;
+			}
+			#environments a:link,
+			#environments a:visited,
+			#environments a:hover,
+			#environments a:active {
+			    color: #555555;
+			    font-weight: bold;
+			}
+	        
+		</style>
+		<script type="text/javascript" src="http://ems-devx-web-vip.in.sensis.com.au/v2/web/js/ems/?token=2804511659754496657&libraries=standard,EMS.Control.DraggingControl,EMS.Handler.DragMarkerHandler&compress=false"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+
+        <title>whereis | faker bridge | localhost</title>
+	</head>
+	<body>
+
+		<div id="map-div" ></div>
+
+		<div class='frameBox backgroundBox doubleBorder' style='top:8px;right:8px;width:395px;height:29px'>
+			<div class='heading largeText' style='padding:8px 14px' id='mousePosition' >
+				-00.00000000000000, 000.00000000000000
+			</div>
+		</div>
+
+		<div class='frameBox' style='bottom:56px;left:90px;height:0px;' id='waypointsControl'>
+			<div class='backgroundBox1 doubleBorder' style='width:677px;height:100%;overflow-y:scroll;overflow-x:hidden' id='waypointList'>
+				<!-- This div contains many of the following div, one for each AddressPoint object. -->
+				<div class='addressPoint' style='height:60px;' id='last-point-div'>
+					<button class='mediumText left' type='button' id='add'>
+						<span class='button-text'>Add</span>
+					</button>
+					
+					<div class='backgroundBox1 singleBorder' style='width:570px;height:53px;float:right;'>
+						<div class='label smallText' style='margin-left:3px;text-align:left;display:inline-block;width:505px;'>
+							<span>FILE NAME (use '.gpx' suffix to save in GPX format)</span>
+							<span style='margin-left:48px'>OVERWRITE</span>
+						</div>
+						<input type='checkbox' style='width:42px;height:12px;float:right;margin-top:4px;' id='overwriteSaveFile' >
+						<input class='largeText' style='width:475px;' id='saveFileName' >
+						<button class='mediumText right' type='button' id='saveFile' >
+							<span class='button-text'>Save</span>
+						</button>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	
+		<div class='frameBox' style='bottom:56px;left:50px;height:0px;' id='replayControl'>
+			<div class='backgroundBox2 singleBorder' style='width:400px;height:100%;overflow-x:hidden;overflow-y:hidden;'>
+				<div class='addressPoint singleBorder'>
+					<button class='smallText left' type='button' id='replayStart'>
+						<span>Start Route</span>
+					</button>
+					<button class='mediumText left' type='button' id='replayPause'>
+						<span>Pause</span>
+					</button>
+					<button class='mediumText left' type='button' id='replayStop'>
+						<span>Stop</span>
+					</button>
+					<button class='smallText left' type='button' id='replayManually'>
+						<span>Position Manually</span>
+					</button>
+				</div>
+				<div>
+					<div class='backgroundBox2 singleBorder' style='width:127px'>
+						<div class='heading mediumText' style='padding:15px 33px'>ELAPSED</div>
+					</div>
+					<div class='backgroundBox2 singleBorder' style='width:72px'>
+						<div class='label smallText' style='padding-right:15px;text-align:right'>POINTS</div>
+						<div class='info mediumText' style='padding-right:15px;text-align:right' id='replayPointsElapsed'></div>
+					</div>
+					<div class='backgroundBox2 singleBorder' style='width:101px'>
+						<div class='label smallText' style='padding-right:36px;text-align:right'>TIME</div>
+						<div class='info mediumText' style='padding-right:14px;text-align:right' id='replayTimeElapsed'></div>
+					</div>
+					<div class='backgroundBox2 singleBorder' style='width:92px'>
+						<div class='label smallText' style='padding-right:20px;text-align:right'>DISTANCE</div>
+						<div class='info mediumText' style='padding-right:12px;text-align:right' id='replayDistanceElapsed'></div>
+					</div>
+				</div>
+				<div>
+					<div class='backgroundBox2 singleBorder' style='width:127px'>
+						<div class='heading mediumText' style='padding:15px 33px'>TOTAL</div>
+					</div>
+					<div class='backgroundBox2 singleBorder' style='width:72px'>
+						<div class='label smallText' style='padding-right:15px;text-align:right'>POINTS</div>
+						<div class='info mediumText' style='padding-right:15px;text-align:right' id='replayPointsTotal'></div>
+					</div>
+					<div class='backgroundBox2 singleBorder' style='width:101px'>
+						<div class='label smallText' style='padding-right:36px;text-align:right'>TIME</div>
+						<div class='info mediumText' style='padding-right:14px;text-align:right' id='replayTimeTotal'></div>
+					</div>
+					<div class='backgroundBox2 singleBorder' style='width:92px'>
+						<div class='label smallText' style='padding-right:20px;text-align:right'>DISTANCE</div>
+						<div class='info mediumText' style='padding-right:12px;text-align:right' id='replayDistanceTotal'></div>
+					</div>
+				</div>
+				
+				<div>
+					<div class='backgroundBox2 singleBorder' style='height:86px;width:167px'>
+						<div class='label smallText' style='padding-right:8px;text-align:right'>MINIMUM PLAYBACK STEP</div>
+						<div class='info' style='padding-right:15px;text-align:right;margin-top:-3px;padding-left:10px;'>
+							<input type='radio' style='width:12px;height:12px;float:left;margin-top:7px;' name='minimumPlayback' value='time' id='minPlayTime' >
+							<div class='label smallText' style='padding-left:10px;text-align:right;float:left;margin-top:4px;'>time</div>
+							<input class='smallText' style='width:40px;text-align:right' id='minPlayTimeValue' >
+						</div>
+						<div class='info' style='padding-right:15px;text-align:right;margin-top:-3px;padding-left:10px;'>
+							<input type='radio' style='width:12px;height:12px;float:left;margin-top:7px;' name='minimumPlayback' value='distance' id='minPlayDist'>
+							<div class='label smallText' style='padding-left:10px;text-align:right;float:left;margin-top:4px;'>distance</div>
+							<input class='smallText' style='width:40px;text-align:right' id='minPlayDistValue' >
+						</div>
+
+					</div>
+					<div class='backgroundBox2 singleBorder' style='height:86px;width:229px'>
+
+					</div>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='frameBox' style='bottom:56px;left:200px;height:0px;' id='loadControl'>
+			<div class='backgroundBox3 doubleBorder' style='width:600px;height:100%;overflow-y:scroll;overflow-x:hidden' id='loadFileList'>
+				<!-- This div contains many of the following div, one for each LoadFile object. -->
+				<div class='addressPoint' >
+					<button class='mediumText left' type='button' id='load'>
+						<span>Load</span>
+					</button>
+					<div class='label mediumText' style='padding-left:12px;padding-top:8px;float:left;'>some long long file name</div>
+				</div>
+			</div>
+		</div>
+	
+		<div class='frameBox' style='bottom:8px;left:8px;'>
+			<div class='singleBorder' style='height:46px;'>
+				<div class='backgroundBox1 singleBorder' style='width:101px' id='waypointsTitle'>
+					<div class='heading largeText' style='padding:15px 12px'>Waypoints</div>
+				</div>
+				<div class='backgroundBox2 singleBorder' style='width:75px' id='replayTitle'>
+					<div class='heading largeText' style='padding:15px 10px'>Replay</div>
+				</div>
+				<div class='backgroundBox3 singleBorder' style='width:56px' id='loadTitle'>
+					<div class='heading largeText' style='padding:15px 10px'>Load</div>
+				</div>
+				<div class='backgroundBox singleBorder' style='width:127px'>
+					<div class='label smallText' style='padding-left:7px'>STREETPOINT SNAP</div>
+					<input class='info mediumText' style='margin-left:53px' type="checkbox" id="snapToStreetPoint">
+				</div>
+				<div class='backgroundBox singleBorder' style='width:121px'>
+					<div class='label smallText' style='padding-left:12px'>REV.GEOCODE TO</div>
+					<select class='info mediumText' style='padding:0px 13px;border:0px;width:100%' id="revGeoFeature" name="feature">
+						<option value="dont">Nope, don't</option>
+						<option value="property">Property</option>
+						<option value="road">Road</option>
+						<option value="placename">Suburb</option>
+					</select>
+				</div>
+				<div class='backgroundBox singleBorder' style='width:80px'>
+					<div class='label smallText' style='padding-left:9px'>WAYPOINTS</div>
+					<div class='info mediumText' style='padding-left:12px' id='pointCount'>000</div>
+				</div>
+				<div class='backgroundBox singleBorder' style='width:76px'>
+					<div class='label smallText' style='padding-left:9px'>SEGMENTS</div>
+					<div class='info mediumText' style='padding-left:17px' id='segmentCount'>000</div>
+				</div>
+				<div class='backgroundBox singleBorder' style='width:51px'>
+					<div class='label smallText' style='padding-left:12px'>PING</div>
+					<input class='info mediumText' style='margin-left:18px' type="checkbox" id="ping">
+				</div>
+				<div class='backgroundBox singleBorder' style='width:125px'>
+					<div class='label smallText' style='padding-left:24px'>ADB STATUS</div>
+					<div class='info mediumText' style='padding-left:8px' id='adbStatus'>---</div>
+				</div>
+				<div class='backgroundBox singleBorder' style='width:132px'>
+					<div class='label smallText' style='padding-left:19px'>DEVICE STATUS</div>
+					<div class='info mediumText' style='padding-left:17px' id='deviceStatus'>---</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="environments">
+			ems environment: 
+			<a href="/?ems_environment=dev">dev</a> | 
+			<a href="/?ems_environment=test">test</a> | 
+			<a href="/?ems_environment=stage">stage</a> | 
+			<a href="/?ems_environment=prod">prod</a> | 
+		</div>
+
+		<script type="text/javascript">
+
+	var App = {};
+	
+	var popupController = {
+		waypoints: 	{ isUp: false, onup: null, ondown: null, ontoggle: null, height: '400px', id: '#waypointsControl' },
+		replay: 	{ isUp: false, onup: null, ondown: null, ontoggle: null, height: '220px', id: '#replayControl' },
+		load:  		{ isUp: false, onup: null, ondown: null, ontoggle: null, height: '450px', id: '#loadControl' },
+
+		init: function() {
+		    $('#waypointsTitle').click(function() 	{ popupController.toggle('waypoints'); });
+		    $('#replayTitle').click(function() 		{ popupController.toggle('replay'); });
+		    $('#loadTitle').click(function() 		{ popupController.toggle('load'); });
+		},
+		toggle: function(name) {
+			var control = popupController[name];
+			if (control.isUp) {
+				popupController.down(name);
+			} else {
+				popupController.up(name);
+			}
+			if (control.ontoggle) {
+				control.ontoggle(control.isUp);
+			}
+		},
+		up: function(name) {
+			var control = popupController[name];
+	        $(control.id).animate({height:control.height});
+	        control.isUp = true;
+			if (control.onup) {
+				control.onup();
+			}
+		},
+		down: function(name) {
+			var control = popupController[name];
+	        control.isUp = false;
+	        $(control.id).animate({height:'0px'});
+			if (control.ondown) {
+				control.ondown();
+			}
+		},
+		on: function(name, action, callback) {
+			var control = popupController[name];
+			action = 'on' + action;
+			control[action] = callback; 
+		}
+	};
+
+	/**
+	 */
+	App.RouteGen = OpenLayers.Class({
+		emsMap: null,
+		markerLayer: null,
+		contextPopup: null,
+		pointList: null,
+		geocodeService: null,
+		routeService: null,
+		suggestService: null,
+		detailsService: null,
+		vectorLayer: null,
+		pointCount: 0,
+		segmentCount: 0,
+    	routeLineStyle: {
+       		strokeColor: '#0000ff',
+       		strokeOpacity: 0.5,
+       		strokeWidth: 5
+       	},
+       	replayer: null,
+       	
+		initialize: function(divName) {
+			var controls = [];
+	        controls.push(new EMS.Control.ZoomBar({fullsize: true}));
+	        controls.push(new EMS.Control.Navigation({dragPanOptions: {enableKinetic: true}}));
+	        controls.push(new OpenLayers.Control.TouchNavigation());
+	        controls.push(new OpenLayers.Control.PinchZoom());
+	        //controls.push(new EMS.Control.Copyright({fullsize: true}));
+			
+		    this.emsMap = new EMS.Map(divName, {
+		        "zoom": EMS.Zoom.SUBURB,
+		        "controls": controls,
+		        "center": new EMS.LonLat(144.96291, -37.813585)
+		   	});
+		    
+		    // Create a dragging control for moving markers, and handle
+		    // the move and complete callbacks, passing the new latLon.
+		    var markers = this.emsMap.getLayerByName(EMS.Layer.MARKERS);
+		    var draggingControl = new EMS.Control.DraggingControl(markers, {
+		    	'onDrag': function(event) {
+		    		event.markerPoint.onDragMove(event.lonlat);
+		    	},
+		    	'onComplete': function(event) {
+		    		event.markerPoint.onDragComplete(event.lonlat);
+		    	}
+		    });
+		    this.emsMap.addControl(draggingControl);		    
+		    draggingControl.activate();
+
+		    // This mouse move listener simply tracks the lat lon into a display div.
+			this.emsMap.events.register('mousemove', this, function(event) {
+				var pos = OpenLayers.Util.pagePosition(this.emsMap.div);	// Get position of div in relation to the page 
+				var x = EMS.Event.pointerX(event) - pos[0];					// Pixel position in page, adjusted by 
+				var y = EMS.Event.pointerY(event) - pos[1];					// offset to get pixel position in div
+				var px = new OpenLayers.Pixel(x, y);
+				// Convert from pixel to lonlat and from EMS.Projection.GEOGRAPHICAL to EMS.Projection.SPHERICAL_MERCATOR.
+				// The getLonLatFromViewPortPx and getLonLatFromPixel calls give the same result
+				var mouseLonLat = this.emsMap.getLonLatFromPixel(px).asWGS84();		
+				var text = mouseLonLat.lat + ', ' + mouseLonLat.lon;
+				$('#mousePosition').text(text);		
+			});
+		    
+		    // The context popup handles button-2 click, used for placing MarkerPoints
+			this.contextPopup = new App.ContextPopup(this.emsMap);
+		    // Pointlist is where the waypoints are stored.
+			this.pointList = new App.PointList($('#waypointList'), this.emsMap);
+			
+			this.geocodeService = new EMS.Service.Geocode();
+		    this.routeService = new EMS.Service.Route();
+		    this.suggestService = new EMS.Service.Suggest();
+		    this.detailsService  = new EMS.Service.Details();
+		    	
+		    $('select#revGeoFeature').val('property');		// Default to rev-geocode
+		    
+		    // Vector layer is where the route segments are drawn.
+		    this.vectorLayer = new OpenLayers.Layer.Vector('myVectorLayer');
+		    this.emsMap.addLayers([this.vectorLayer]);
+		    
+		    // The HttpAdbBridge comms channel.
+		    this.bridge = new App.Bridge();
+		    
+		    // For replaying routes.
+		    this.replayer = new App.Replayer(this.pointList, this.bridge, this.emsMap);
+		}
+					
+	});
+	
+	App.Replayer = OpenLayers.Class({
+		
+		pointList: null,
+		bridge: null,
+		emsMap: null,
+		blinkerMarker: null,
+		
+       	stepTimeMin: 1000,		// Minimum time in milliseconds between points sent to the device.
+       	stepDistMin: 5,			// Minimum distance in metres between points sent to the device.
+       	useTime: true,			// Specifies which step-minimum to use in calculating the step number.
+
+		playExchange: null,
+		elapsedTime: null,		// In millisecs.
+		elapsedDist: null,		// In metres.
+		elapsedCount: null,		// Index into timePoints for the element being sent.
+		timePoints: null,		// Array of { 'x', 'y', 'd', 't'} elements.
+		
+		timer: null,	 
+		isPaused: null,
+		isManual: null,
+		isStopped: null,
+		
+		initialize: function(pointList, bridge, emsMap) {
+			this.pointList = pointList;
+			this.bridge = bridge;
+			this.emsMap = emsMap;
+			
+			$('#replayStart').click(jQuery.proxy(function() {
+				this.startReplay();
+			}, this));
+			$('#replayPause').click(jQuery.proxy(function() {
+				this.pauseReplay();
+			}, this));
+			$('#replayStop').click(jQuery.proxy(function() {
+				this.stopReplay();
+			}, this));
+			$('#replayManually').click(jQuery.proxy(function() {
+				this.manualReplay();
+			}, this));
+			//
+			onDragMoveCallback = null;
+			onDragCompleteCallback = null;
+			this.blinkerMarker = new App.BlinkerMarker(this.emsMap, onDragMoveCallback, onDragCompleteCallback);
+			this.isStopped = true;
+			
+			$('#minPlayTime').click(jQuery.proxy(function() {this.useTime = true;}, this));
+			$('#minPlayDist').click(jQuery.proxy(function() {this.useTime = false;}, this));
+			$('#minPlayTimeValue').val('1000');
+			$('#minPlayDistValue').val('5');
+			$('#minPlayTime').click();
+		},
+		startReplay: function() {
+			this.stopReplay();
+			
+			var routeInfo = this.makeRouteInfo();
+			this.timePoints = routeInfo.timePoints;
+			
+			this.format(true, { 
+				'points':this.timePoints.length, 
+				'time':routeInfo.totalTime, 
+				'dist':routeInfo.totalDist 
+			});
+			if (this.timePoints.length == 0) {
+				this.format(false, null);
+				alert('route has zero points to replay');
+				return;
+			}
+			this.elapsedTime = 0;
+			this.elapsedDist = 0;
+			this.elapsedCount = 0;
+			this.format(false, { 
+				'points':this.elapsedCount, 
+				'time':this.elapsedTime, 
+				'dist':this.elapsedDist 
+			});
+			this.isPaused = false;
+			this.isManual = false;
+			this.isStopped = false;
+
+			this.sendLocation();		// Kick off the first point replay.
+			this.blinkerMarker.setShowing(true);
+		},
+		
+		stopReplay: function() {
+			this.blinkerMarker.setShowing(false);
+			this.clearTimer();
+			this.isStopped = true;
+		},
+		
+		pauseReplay: function() {
+			this.isPaused = ! this.isPaused;
+		},
+		
+		manualReplay: function() {
+			// Stop any replay.  Set the blinker to showing, and positioned at the center of the screen.
+			this.stopReplay();
+			this.isPaused = false;
+			this.isManual = true;
+			this.isStopped = false;
+			//this.blinkerMarker.moveToLonLat(new EMS.LonLat({ 'lat': -37.8111591156457, 'lon': 144.9651630555738}));
+			this.sendLocation();
+			this.blinkerMarker.setShowing(true);
+		},
+		
+		clearTimer: function() {
+			if (this.timer) {
+				window.clearTimeout(this.timer);
+				this.timer = null;
+			}
+		},
+		// Send the point indexed by elapsedCount or the current position of the blinker (if manually positioning)
+		sendLocation: function() {
+			this.clearTimer();
+			this.noGPS = false;
+			var data = { 'cmd': 'playLocation' };
+			if (this.isManual) {
+				var wgs84Point = this.blinkerMarker.emsMarker.lonlat.asWGS84();
+				data.lat = wgs84Point.lat;
+				data.lon = wgs84Point.lon;
+			} else {
+				var tpoint = this.timePoints[this.elapsedCount];
+				transformedPoint = OpenLayers.Projection.transform(
+						new OpenLayers.Geometry.Point(tpoint.x, tpoint.y), 
+						EMS.Projection.SPHERICAL_MERCATOR, 
+						EMS.Projection.GEOGRAPHICAL);
+				data.lat = transformedPoint.y;
+				data.lon = transformedPoint.x;
+				
+				// TODO bearing etc  bearing:"12.34"
+				var there = {
+					'lat': data.lat,
+					'lon': data.lon
+				};
+				if (this.here) {
+					data.bearing = this.getBearingFromHereToThere(this.here,there);
+				}
+				this.here = there;
+				
+				// Move blinker to the sent location.
+				this.blinkerMarker.moveToLonLat(new EMS.LonLat(data));
+				this.noGPS = tpoint.g;
+			}
+			if (!this.isStopped) {
+				if (this.noGPS) {
+					this.playSuccess();			// Don't send nothing, just go to the callback to queue the next one.
+				} else {
+					this.playExchange = new App.Bridge.Exchange({
+						'timeout': 3000,
+						'data': data,
+						'onSuccess': jQuery.proxy(this.playSuccess, this), 
+						'onFailure': jQuery.proxy(this.playFailure, this)
+					});
+					this.playExchange.send();
+				}
+			}
+		},
+		
+		here: null,
+		
+	    /**
+	     * Returns the initial bearing (also called forward azimuth) (in radians) 
+	     * from here to there.  Ref http://www.movable-type.co.uk/scripts/latlong.html
+	     * and http://www.ig.utexas.edu/outreach/googleearth/latlong.html
+	     */
+	    getBearingFromHereToThere: function(here, there) {
+	    	var dLon = there.lon - here.lon;
+	    	var lat1 = here.lat;
+	    	var lat2 = there.lat;
+	    	
+	    	var y = Math.sin(dLon) * Math.cos(lat2);
+	    	var x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+	    	var brng = Math.atan2(y, x);			// in the range -pi ... +pi
+	    	brng = brng * 180 / Math.PI;			// to degrees
+	    	brng = (brng + 720) % 360;			// Compass bearing East of North.
+	    	return brng;
+	    },
+		
+		// The point at elapsedCount has just been successfully sent.
+		// Increment the elapsedCount index, elapsedDist and elapsedTime,
+		// update the elapsed display, and set the timer for the next point.
+		// Blink when it has completed ok.
+		playSuccess: function(response) {
+			if (!this.noGPS) {
+				// Only blink if we did actually send a location.
+				this.blinkerMarker.blink();
+			}
+			var t = null;				// Milliseconds until next point to be sent.
+			var doRepeat = null;
+			if (this.isManual) {
+				t = 1000;
+				doRepeat = true;
+			} else {
+				var tpoint = this.timePoints[this.elapsedCount];
+				t = tpoint.t;
+				if (!this.isPaused) {
+					this.elapsedTime += tpoint.t;
+					this.elapsedDist += tpoint.d;
+					this.elapsedCount++;
+					this.format(false, { 
+						'points':this.elapsedCount, 
+						'time':this.elapsedTime, 
+						'dist':this.elapsedDist 
+					});
+				}
+				doRepeat = this.elapsedCount < this.timePoints.length;
+			}
+			if (doRepeat) {
+				// Schedule the next timepoint.
+				this.timer = window.setTimeout(jQuery.proxy(this.sendLocation, this), t);
+			}
+		},
+		
+		// What to do now ?
+		playFailure: function(error) {
+			this.clearTimer();
+			alert('failed to send point ' + this.elapsedCount + ' because: ' + error);
+		},
+
+		makeRouteInfo: function() {
+			this.stepTimeMin = $('#minPlayTimeValue').val();
+			this.stepDistMin = $('#minPlayDistValue').val();
+			var segs = this.pointList.getSegmentData();
+			var routeInfo = this.makeTimePoints(segs);
+			return routeInfo;
+		},
+		
+		/* Create and return an object { 'timePoints':[ ... ], 'totalTime':123, 'totalDist':123 } where
+		 * timePoints is an array of { 'x', 'y', 'd', 't', 'g'} elements where t is the time in milliseconds 
+		 * that must elapse before the next element, and g means 'noGPS' is set to indicate no GPS signal should be sent. 
+		 */
+		makeTimePoints: function(segs) {
+			var timePoints = [];
+			var totalTime = 0;
+			var totalDist = 0;
+        	console.log('segs length = ' + segs.length);
+			for (s = 0; s < segs.length; s++) {
+				// Each seg looks like:  { 'points':[ Array of OpenLayers.Geometry.Point ], 'speed':speed, 'noGPS':true/false }
+	        	// The first point of each seg should be the same x,y as the last point of the previous seg.
+	        	// If they are the same, use the new point since it's speed is the one to use.
+	        	var points = segs[s].points;
+	        	var speed  = segs[s].speed;			// In metres/millisecond.
+	        	var noGPS  = segs[s].noGPS;
+	        	if (timePoints.length > 0) {
+	        		var lastPoint = timePoints.pop();
+	        		if (!app.pointList.isOverlapping(lastPoint, points[0])) {
+	        			timePoints.push(lastPoint);
+	        		}
+	        	}
+				console.log('seg[' + s + '] has ' + points.length + ' points, speed=' + speed + ', noGPS=' + noGPS);
+	        	// Calculate step size for each pair of (x, y, time)
+	        	for (p = 0; p < points.length - 1; p++) {
+	        		var p1 = points[p];
+	        		var p2 = points[p + 1];
+	        		var dX = p2.x - p1.x;
+	        		var dY = p2.y - p1.y;
+	        		var dL = Math.sqrt(dX*dX + dY*dY);
+	        		var dT = dL / speed;							// Traverse time in milliseconds.
+	        		totalTime += dT;
+		        	totalDist += dL;
+		        	
+	        		var steps = 0;
+	    			if (this.useTime) {
+	    	    		steps = Math.floor(dT / this.stepTimeMin);	// Round down the number of steps so not exceed stepTimeMin,...
+	    			} else {
+	    	    		steps = Math.floor(dL / this.stepDistMin);	// Round down the number of steps so not exceed stepDistMin,...
+	    			}
+	        		if (steps == 0) {
+	        			steps = 1;									// ...unless that would result in zero steps.
+	        		}
+					//console.log('point-pair[' + p + '] has ' + steps + ' steps');
+
+	        		var stepT = dT / steps;							// Actual step time.
+	        		var stepX = dX / steps;
+	        		var stepY = dY / steps;
+	        		var stepL = dL / steps; 
+	        		var x = p1.x;
+	        		var y = p1.y;
+	        		for (i = 0; i < steps; i++) {
+	        			timePoints.push({ 'x': x, 'y': y, 'd': stepL, 't': stepT, 'g': noGPS });
+	        			x += stepX;
+	        			y += stepY;
+	        		}
+	        	}
+	        	// At the end of each seg, push the 'next' point, which should be popped upon the next
+	        	// iteration, thus using the speed/time value for that segment rather than the previous
+	        	// one.  This will be the case for all but the very last iteration, where this last
+	        	// pushed point will remain on the list and become the last point sent to the device.
+    			timePoints.push({ 'x': x, 'y': y, 'd': stepL, 't': stepT, 'g': noGPS });
+			}
+        	console.log('timePoints count: ' + timePoints.length + ' time:' + totalTime + ' dist:' + totalDist);
+        	return { 'timePoints':timePoints, 'totalTime':totalTime, 'totalDist':totalDist };
+		},
+		
+		// Returns a string of the specified length, leading padded with the specified char.
+		pad: function(requiredLength, padChar, text) {
+			text = '' + text;	
+			while (text.length < requiredLength) {
+				text = padChar + text;
+			}
+			return text;
+		},
+		
+		// data = { 'points', 'time', 'dist'}
+		// If data is null, then just clear the fields.
+		format: function(isTotal, data) {
+			var suffix = isTotal ? 'Total' : 'Elapsed';
+			
+			if (!data) {
+				$('#replayPoints' + suffix).text('');
+				$('#replayTime' + suffix).text('');
+				$('#replayDistance' + suffix).text('');
+				return;
+			}
+			$('#replayPoints' + suffix).text(data.points);
+			
+			var r = Math.round(data.time / 1000);		// From millseconds to seconds.
+			var days = Math.floor(r / (60*60*24));
+			r = r % (60*60*24);
+			var hours = Math.floor(r / (60*60));
+			r = r % (60*60);
+			var mins = Math.floor(r / 60);
+			r = r % (60);
+			var secs = Math.floor(r);
+			
+			var timeString = this.pad(2, '0', mins) + ':' + this.pad(2, '0', secs);		// mins:secs
+			// Only format hours if they are non-zero and so are days
+			if (days > 0 || hours > 0) {
+				timeString = this.pad(2, '0', hours) + ':' + timeString;
+			}
+			if (days > 0) {
+				timeString = days + ':' + timeString;
+			}
+			$('#replayTime' + suffix).text(timeString);
+
+			var dist = Math.round(data.dist);
+			$('#replayDistance' + suffix).text(dist/1000);
+		}
+	});
+	
+	/* Marker to show current location.  It can be shown or hidden, moved to lonLat, and made to
+	 * blink. Callbacks can be invoked upon drag move and complete.  The icon can still blink 
+	 * during the move, but will blink in different colours.
+	 */
+	App.BlinkerMarker = OpenLayers.Class({
+		emsMap: null,
+		onDragMoveCallback: null,
+		onDragCompleteCallback: null,
+		emsMarker: null,
+		isShowing: null,
+		timer: null,
+		
+		initialize: function(emsMap, onDragMoveCallback, onDragCompleteCallback) {
+			this.emsMap = emsMap;
+			this.onDragMoveCallback = onDragMoveCallback;
+			this.onDragCompleteCallback = onDragCompleteCallback;
+			
+			// A special marker is created for the Replayer. It's placed on the Markers layer and can be
+			// dragged by the same control as the other markers, but it's not used for routes.  Instead
+			// it can be dragged to set a new current position. To be defined.
+			var icon = new EMS.Icon('http://wiki.sensis.com.au/download/attachments/64401033/3dots-2.png', 
+					new OpenLayers.Size(15,15), new OpenLayers.Pixel(-7, -7), null, 3);
+			//var lonLat = new EMS.LonLat({'lon': 0, 'lat': 0});
+			var lonLat = new EMS.LonLat({ 'lat': -37.8111591156457, 'lon': 144.9651630555738});
+			//var lonLat = new EMS.LonLat({'lon': 144.96291, 'lat': -37.813585});
+			this.emsMarker = new EMS.Marker(lonLat, icon);
+			this.emsMarker.markerPoint = {		// Called by the EMS dragging control.
+				'onDragMove'    : jQuery.proxy(this.onDragMove, this),
+				'onDragComplete': jQuery.proxy(this.onDragComplete, this)
+			};
+			this.emsMap.addMarker(this.emsMarker);
+			
+			// states: 0:yellow, 1:red, 2:green, 3:hidden
+			this.colours = {
+				'yellow' : 0,
+				'red'    : 1,
+				'green'  : 2
+			};
+			this.states = {
+				'off'    : this.colours.yellow,
+				'on'     : this.colours.red,
+				'hidden' : 3
+			};
+			this.setOffStateColour(this.colours.yellow);
+			this.setShowing(false);
+		},
+		// This function doesn't change the show/hidden status.
+		moveToLonLat: function(lonLat) {
+			var px = this.emsMap.getLayerPxFromLonLat(lonLat);		// DONT use emsMap.getPixelFromLonLat(lonLat);
+			this.emsMarker.moveTo(px);
+		},
+		setShowing: function(doShow) {
+			this.isShowing = doShow;
+			this.setState(this.isShowing ? this.states.off : this.states.hidden);
+		},
+		// Perform a single blink, to 'on' and back to 'off'/'hidden'
+		blink: function() {
+			if (this.timer) {
+				window.clearTimeout(this.timer);
+				this.timer = null;
+			}
+			this.setState(this.states.on);
+			this.timer = window.setTimeout(jQuery.proxy(function() {
+				if (this.timer) {
+					window.clearTimeout(this.timer);
+					this.timer = null;
+				}
+				this.setState(this.isShowing ? this.states.off : this.states.hidden);
+			}, this), 300);
+		},
+		
+		// While dragging the off colour changes.
+		onDragMove: function(lonLat) {
+			this.setOffStateColour(this.colours.green);
+			if (this.onDragMoveCallback) {
+				this.onDragMoveCallback(lonLat);
+			}
+		},
+		onDragComplete: function(lonLat) {
+			this.setOffStateColour(this.colours.yellow);
+			if (this.onDragCompleteCallback) {
+				this.onDragCompleteCallback(lonLat);
+			}
+		},
+		setOffStateColour: function(colour) {
+			this.states.off = colour;
+		},
+		setState: function(state) {
+			this.emsMarker.icon.setState(state);
+		}
+	});
+	
+	/*
+	 * This is code that manages the HttpAdbBridge communications.
+	 */
+	App.Bridge = OpenLayers.Class({
+		statusExchange: null,			// Contains a field: serverReady which indicates good to go,
+		
+		initialize: function() {
+			
+			// Setup an Exchange to monitor the bridge status.
+			this.statusExchange = new App.Bridge.Exchange({
+				timeout: 3000,			// Must be greater than the AdbClient.read() timeout.
+				data: { cmd: 'statusCheck' },
+				showResponse: function(connectedText, deviceResponseText) {
+					$('#adbStatus').text(connectedText);	
+					$('#deviceStatus').text(deviceResponseText);
+				},
+				onSuccess: function(response) {
+					this.showResponse(response.result.isConnected ? "adb connected" : "no adb",	
+							response.result.deviceResponse || "not ready");
+				},
+				onFailure: function(e) {
+					this.showResponse(e, "");
+				}
+			});
+			
+			$('#ping').click(jQuery.proxy(function() {
+				var isChecked = $('#ping').is(':checked');
+				if (isChecked) {
+					this.intervalTimer = window.setInterval(jQuery.proxy(function() {
+						this.send();
+					}, this), 2000);
+				} else {
+					window.clearInterval(this.intervalTimer);
+					$('#adbStatus').text('not polling');	
+					$('#deviceStatus').text('');
+				}
+			}, this.statusExchange));
+		},
+		
+		isReady: function() {
+			return ($('#deviceStatus').text() == 'server ready');
+		}
+	});
+
+	/*
+	 * Models an ajax exchange with the HttpAdbBridge.
+	 */
+	App.Bridge.Exchange = OpenLayers.Class({
+		
+		initialize: function(options) {
+			this.options = options;
+		},
+		send: function() {
+	 		$.ajax({
+	 			url: 'http://localhost:5100/',
+	 			dataType: 'jsonp',
+	 			data: this.options.data,
+	 			success: jQuery.proxy(function(response) {
+	 				window.clearTimeout(this.timer);
+	 				if (this.options.onSuccess) {
+	 					this.options.onSuccess(response);
+	 				}
+	 			}, this),
+	 			error: jQuery.proxy(function(e) {
+	 				window.clearTimeout(this.timer);
+	 				if (this.options.onFailure) {
+	 					this.options.onFailure(e);
+	 				}
+	 			}, this)
+	 		});
+			
+			this.timer = window.setTimeout(jQuery.proxy(function() {
+ 				window.clearTimeout(this.timer);
+ 				if (this.options.onFailure) {
+ 					this.options.onFailure('bridge timeout');
+ 				}
+			}, this), this.options.timeout || 1000);
+		},
+		cancel: function() {
+			window.clearTimeout(this.timer);
+		}
+	});	
+
+	/* Is owned by the PointList which can tell it to save a file.
+	 * The Filer can also tell its owning PointList to load an array.
+	 */
+	App.Filer = OpenLayers.Class({
+		pointList: null,			// Dont think this is referenced
+		saveDataList: null,		
+		saveFileName: null,
+		saveRecordCount: null,
+		
+		initialize: function(pointList) {
+			this.pointList = pointList;
+			popupController.on('load', 'up', jQuery.proxy(function() {
+            	this.fetchFileList();
+	        }, this));
+		},
+		
+		/* The dataList is (usually) an array of  
+		 * { "cmd":"appendRouteFile", "fileName":"someFileName.json",
+		 * 'writeOption':'append/overwrite/failIfExisting'
+		 * "lon":"147865", "lat": "234567", "speed":"30", 'noGPS':'true/false', 
+		 * "text":"2 Cross St, Footscray, VIC 3011" }
+		 * However when the filename ends in '.gpx' then the elements in dataList are
+		 * { 'cmd':'appendGpxFile', 'fileName':'someFileName.gpx',
+		 * 'writeOption':'append/overwrite/failIfExisting'
+		 * 'lon':'147865', 'lat': '234567', 'time': 'time-in-millis-elapsed' }
+		 */
+		saveFile: function(fileName, dataList, doOverwrite) {
+			this.saveDataList = dataList.reverse();		// fifo it.
+			this.saveFileName = fileName;
+			this.saveRecordCount = 0;
+			// When saving the first record, we instruct the server to either check for an
+			// existing file of the same name, and fail if it exists (writeOption=failIfExisting)
+			// or to simply overwrite any existing same named file (writeOption=overwrite).
+			// Note that that type of failure is checked in the success handler, since it's 
+			// a protocol error and not an ajax error.
+			this.saveNextRecord(doOverwrite ? 'overwrite' : 'failIfExisting');
+		},
+		
+		/* Save the next record from the front of the saveDataList. */
+		saveNextRecord: function(writeOption) {
+			var data = this.saveDataList.pop();
+			if (!data) {
+				alert('saved ' + this.saveRecordCount + ' records to file ' + this.saveFileName);
+			} else {
+				data.writeOption = writeOption;
+				writeExchange = new App.Bridge.Exchange({
+					'timeout': 1000,
+					'data': data,
+					'onFailure': function(e) { alert('error ' + e + ', while saving'); },
+					'onSuccess': jQuery.proxy(function(response) {
+						// Check for 'already-existing-file' error.
+						if (response.result == 'already exists') {
+							alert('file ' + this.saveFileName + ' already exists - try with Overwrite');
+						} else {
+							this.saveRecordCount++;
+							
+							// All subsequent records are simply appended.
+							this.saveNextRecord('append');
+						}
+					}, this)
+				});
+				writeExchange.send();
+			}
+		},
+		
+		/* Called from the PointList.delet() function. */
+		delet: function(fileName) {
+			deleteExchange = new App.Bridge.Exchange({
+				'timeout': 3000,
+				'data': {
+					'cmd': 'deleteRouteFile',
+					'fileName': fileName
+				},
+				'onFailure': function(e) { alert('error ' + e + ', while deleting'); },
+				'onSuccess': jQuery.proxy(function(response) {
+					// Check for 'already-existing-file' error.
+					if (response.result == 'ok') {
+						this.fetchFileList();		// Refresh.
+					} else {
+						alert("couldn't delete file " + this.saveFileName + ' : ' + response.result);
+					}
+				}, this)
+			});
+			deleteExchange.send();
+		},
+		
+		fetchFileList: function() {
+			$('#loadFileList').empty();
+			listingExchange = new App.Bridge.Exchange({
+				'timeout': 3000,
+				'data': { "cmd":"listRouteFiles" },
+				'onFailure': function(e) { alert('error ' + e + ', while listing route files')},
+				'onSuccess': jQuery.proxy(function(response) {
+					var y = 1;
+					var html =
+						"<div class='point addressPoint'>  \n" +
+						"    <button class='mediumText left' type='button' id='load' > \n" +
+						"        <span>Load</span> \n" +
+						"    </button> \n" +
+						"    <div class='label mediumText' style='padding-left:12px;padding-top:8px;float:left;' id='fileName'>some long long file name</div> \n" +
+						"    <button class='smallText right' type='button' id='delete' > \n" +
+						"        <span>Delete</span> \n" +
+						"    </button> \n" +
+						"</div> "
+					for (f = 0; f < response.result.length; f++) {
+						var jobject = $(html);
+						jobject.find('#fileName').text(response.result[f]);
+						jobject.find('#load').bind('click', function() {
+							// Context is the button.
+							app.pointList.load($(this).next().text());
+						});
+						jobject.find('#delete').bind('click', function() {
+							app.pointList.delet($(this).prev().text());
+						});
+						$('#loadFileList').append(jobject);
+					}
+				}, this)
+			});
+			listingExchange.send();
+		},
+		
+		/**
+		 * Input request: { "cmd":"readFileContents", "fileName":"some file name.json" }
+		 * Return result:  { 'error':null, 'pointDataList' : {[ <pointData>]} }
+		 * Where each pointData = {'text':'3 wakanui st northcote', 'speed':'30', 'lon':'34567', 'lat':'gsgsd'}
+		 * Called with an on-success function that takes array of <pointData> elements.
+		 */
+		readFileContents: function(fileName, onReadSuccess) {
+			readExchange = new App.Bridge.Exchange({
+				'timeout': 5000,
+				'data': { 'cmd':'readFileContents', 'fileName':fileName },
+				'onFailure': function(e) { alert('error ' + e + ', while reading file:' + fileName)},
+				'onSuccess': function(response) {
+					var errMsg =  'no result';
+					if (response.error) {
+						errMsg = response.error;
+					}
+					if (response.result) {
+						if (response.result.error) {
+							errMsg = response.result.error;
+						} else {
+							errMsg = null;
+							onReadSuccess(response.result.pointDataList);
+						}
+					}
+					if (errMsg) {
+						alert(errMsg);
+					}
+				}
+			});
+			readExchange.send();
+		}
+		
+	});
+	
+	App.PointList = OpenLayers.Class({
+		jdiv: null,
+		emsMap: null,
+		lastChild: null,
+		filer: null,
+		loadFileName: null,
+		
+		initialize: function(jdiv, emsMap) {
+			this.jdiv = jdiv;
+			this.emsMap = emsMap;
+			this.filer = new App.Filer(this);
+			this.lastChild = this.jdiv.children().last();
+			
+			this.lastChild.find('button#add').click(jQuery.proxy(this.add, this));
+			this.lastChild.find('button#saveFile').click(jQuery.proxy(this.save, this));
+		},
+
+		/* Called from the SAVE button click handler on the waypoints list. */
+		save: function() {
+			var fileName = this.lastChild.find('input#saveFileName').val();
+			var doOverwrite = this.lastChild.find('input#overwriteSaveFile').is(':checked');
+			if (!fileName || fileName.trim().length == 0) {
+				alert('no save file name specified');
+				return;
+			}
+			var dataList = [];
+			// A filename ending with '.gpx' is saved as a GPX file, not a json waypoints file.
+			if (fileName.indexOf('.gpx') == -1) {
+				this.jdiv.children().each(function(index, element) {
+					var addressPoint = $(this).data('model');
+					if (addressPoint && addressPoint.markerPoint) {
+						var lonLat = addressPoint.markerPoint.emsMarker.lonlat.asWGS84();
+						dataList.push({
+							'cmd': 'appendRouteFile',
+							'fileName': fileName,
+							'lon': lonLat.lon,
+							'lat': lonLat.lat,
+							'text': addressPoint.getText(),
+							'speed': addressPoint.getSpeed(),
+							'noGPS': addressPoint.markerPoint.getNoGPS()
+						});
+					}
+				});
+			} else {
+				var routeInfo = app.replayer.makeRouteInfo();
+				var timePoints = routeInfo.timePoints;
+				var timeElapsed = 0;
+				for (t = 0; t < timePoints.length; t++) {
+					var data = { 'cmd': 'appendGpxFile', 'fileName': fileName };
+					if (t == (timePoints.length - 1)) {
+						data.writeEpilogue = true;
+					}
+					var tpoint = timePoints[t];
+					var transformedPoint = OpenLayers.Projection.transform(
+							new OpenLayers.Geometry.Point(tpoint.x, tpoint.y),
+							EMS.Projection.SPHERICAL_MERCATOR,
+							EMS.Projection.GEOGRAPHICAL);
+					data.lat = transformedPoint.y;
+					data.lon = transformedPoint.x;
+					data.time = Math.floor(timeElapsed);
+					if (!tpoint.g) {		// Not no-GPS ?
+						dataList.push(data);
+					}
+					timeElapsed += tpoint.t; 
+				}
+			}
+			if (dataList.length == 0) {
+				alert('no waypoint data to save');
+			} else {
+				this.filer.saveFile(fileName, dataList, doOverwrite);
+			}
+			// Ensure overwrite isn't accidentally left set.
+			this.lastChild.find('input#overwriteSaveFile').removeAttr('checked')
+		},
+		
+		/* Called from the DELETE button click handler on the file name list. */
+		delet: function(fileName) {
+			this.filer.delet(fileName);
+		},
+		
+		/* Called from the LOAD button click handler on the file name list. */
+		load: function(fileName) {
+			this.loadFileName = fileName;
+			var pointDataList = this.filer.readFileContents(fileName, jQuery.proxy(function(pointDataList) {
+				if (pointDataList.length == 0) {
+					alert('file ' + this.loadFileName + ' is empty');
+					return;
+				}
+				popupController.up('waypoints');				// Ensure waypoints list is open.
+				this.jdiv.find('button#remove').click();		// Delete all existing points.
+				
+				this.lastChild.find('input#saveFileName').val(this.loadFileName);
+				this.lastChild.find('input#overwriteSaveFile').removeAttr('checked')
+				for (p = 0; p < pointDataList.length; p++) {
+					// Each element is {'text':'3 wakanui st northcote', 'speed':'30', 'lon':'34567', 'lat':'gsgsd', 'noGPS':'true'}
+					var pData = pointDataList[p];
+					//var streetPoint = {'lon': lon, 'lat': lat};
+					var lonLat = new EMS.LonLat(pData);
+					var ap = new App.AddressPoint(this.emsMap, lonLat, pData.text, pData.speed, pData.noGPS);
+					this.lastChild.before(ap.jobject);
+					ap.linkIntoRoute();
+				}
+			}, this)); 
+		},
+		
+		// Insert a new empty Point at the end of the list (before the button div).
+		// This needs some editing before it can be placed on the map.  Since this
+		// AddressPoint has no MarkerPoint, there is no need to invoke linkIntoRoute().
+		add: function() {
+			var ap = new App.AddressPoint(this.emsMap, null);
+			this.lastChild.before(ap.jobject);
+		},
+		
+		allowed: function(pointType) {
+			count = this.jdiv.children().length - 1;
+			switch (pointType) {
+			case 'waypoint':
+				return (count >= 2);
+			case 'finish':
+				return (count >= 1);
+			default:
+				return true;
+			}
+		},
+
+		addPoint: function(pointType, lonLat) {
+			// Place the new point/marker on the map.
+			if (pointType == 'close') {
+				return;
+			}
+			var ap = new App.AddressPoint(this.emsMap, lonLat);
+			switch (pointType) {
+			case 'start':
+				this.jdiv.prepend(ap.jobject);
+				break;
+			case 'waypoint':
+				var element = this.getElementForInsertion(lonLat);
+				$(element).after(ap.jobject);
+				break;
+			case 'finish':
+				this.lastChild.before(ap.jobject);
+				break;
+			default:
+				return;
+			}
+			// This new AddressPoint will also have a MarkerPoint, that must be linked into 
+			// the route. This can be done now since the element is placed in the DOM and so
+			// its siblings are discoverable.
+			ap.linkIntoRoute();
+		},
+
+		/* Determine which routesegment is 'closest' to the lonLat, and therefore
+		 * after which element the new AddressPoint should be inserted in the list. 
+		 */
+		getElementForInsertion: function(lonLat) {
+			var aps = [];
+			// First build an array of { element:<>, lonLatA:{} } for each element in the points list which
+			// has a non-null MarkerPoint (ie a lonLat).
+			this.jdiv.children().each(function(index, element) {
+				var addressPoint = $(this).data('model');
+				if (addressPoint && addressPoint.markerPoint) {
+					aps.push({ 'element': this, 'lonLatA': addressPoint.markerPoint.emsMarker.lonlat });
+				}
+			});
+			if (aps.length == 0) {
+				return null;
+			}
+			if (aps.length < 3) {
+				return aps[0].element;
+			}
+			// We have at least three points (ie. two segments). Proceed.
+			
+			// Now with that array, for each entry except the last, add member for 'lonLatB' and 
+			// then determine the closest point on that line so that each entry in the array now 
+			// looks like { element:<>, lonLatA:{}, lonLatB:{}, distance:123, match:'A/B/online' }
+			var closests = [];
+			for (var a = 0; a < aps.length - 1; a++) {
+				var dobject = aps[a];
+				dobject.lonLatB = aps[a + 1].lonLatA;
+				dobject.distance = this.getClosest(lonLat, dobject.lonLatA, dobject.lonLatB);
+				// Place the object with the smallest distance in the closests array (may be more than one).
+				if (closests.length == 0) {
+					// First time around.
+					closests.push(dobject);
+				} else if (dobject.distance < closests[0].distance) {
+					// New closest; drop all previous ones.
+					closests = [];
+					closests.push(dobject);
+				} else if (dobject.distance == closests[0].distance) {
+					// Equal closests; how unlikely is that!
+					closests.push(dobject);
+				}
+			}
+			// If there are multiple closests, determine the 'best' one to use.
+			// The 'best' is the one that results in the shortest amount of extra 
+			// length in the overall route.
+			if (closests.length <= 1) {
+				return closests[0].element;
+			}
+			var indexOfClosest = 0;
+			for (var b = 0; b < closests.length; b++) {
+				closests[b].extraRouteDistance 
+					= this.distanceBetween(lonLat, closests[b].lonLatA) + this.distanceBetween(lonLat, closests[b].lonLatB)
+					- this.distanceBetween(closests[b].lonLatA, closests[b].lonLatB);
+				if (closests[b].extraRouteDistance <= closests[indexOfClosest].extraRouteDistance) {
+					indexOfClosest = b;
+				}
+			}
+			return closests[indexOfClosest].element;
+		},
+		
+		// Return the closest distance between p3 and the line between point1 and point2. 
+		// Ref: http://paulbourke.net/geometry/pointlineplane/
+		// p1, p2 and p3 have 'lon' and 'lat' members.
+		getClosest: function(p3, p1, p2) {
+			var xDelta = p2.lon - p1.lon;
+			var yDelta = p2.lat - p1.lat;
+			if (xDelta == 0 && yDelta == 0) {
+			    alert('p1 and p2 cannot be the same point');
+			}
+			var u = ((p3.lon - p1.lon) * xDelta + (p3.lat - p1.lat) * yDelta) / (xDelta * xDelta + yDelta * yDelta);
+			var closestPoint = null;
+			if (u < 0) {
+			    closestPoint = p1;
+			} else if (u > 1) {
+			    closestPoint = p2;
+			} else {
+			    closestPoint = { 'lon': (p1.lon + u * xDelta), 'lat': (p1.lat + u * yDelta) };
+			}
+			return this.distanceBetween(closestPoint, p3);			
+		},
+		
+		// p1 and p2 have 'lon' and 'lat' members.
+		distanceBetween: function(p1, p2) {
+			var xDelta = p2.lon - p1.lon;
+			var yDelta = p2.lat - p1.lat;
+			return Math.sqrt(xDelta * xDelta + yDelta * yDelta);
+		},
+		
+		// Disallow editing/buttoning while context popup.
+		enable: function(enabled) {
+			if (enabled) {
+				this.jdiv.find(':input').removeAttr('disabled');
+			} else {
+				this.jdiv.find(':input').attr('disabled', '');
+			}
+		},
+		
+		// Returns true if both args are non-null and have equal x and y fields.
+		isOverlapping: function(previousXY, newXY) {
+    		if (!previousXY || !newXY) {
+        		return false;
+    		}
+    		var overlaps = (previousXY.x == newXY.x && previousXY.y == newXY.y);
+    		if (!overlaps) {
+        		console.log('uh oh, points DONT overlap');
+    		}
+			return overlaps;
+		},
+		
+		// Return an array of all the routeSegments, skipping AddressPoints with no MarkerPoint.
+		// Each element is { 'points':[ Array of OpenLayers.Geometry.Point ], 'speed':speed, 'noGPS':true/false }. May be an empty array.
+		getSegmentData: function() {
+			var segments = [];
+			var addressPoint = this.jdiv.children().first().data('model');
+			if (addressPoint) {
+				var markerPoint = addressPoint.markerPoint;
+				if (!markerPoint) {
+					markerPoint = addressPoint.getPrevOrNext(true);		// get next non-null markerPoint.
+				}
+				while (markerPoint && markerPoint.routeSegmentNext) {
+					var segment = markerPoint.routeSegmentNext;
+					segments.push({ 
+						'points': segment.points, 
+						'speed' : markerPoint.speed,
+						'noGPS' : markerPoint.getNoGPS(),
+					});
+					markerPoint = segment.markerPointB;
+				}
+			}
+			return segments;
+		}
+	});
+	
+	/* 
+	 */
+	App.AddressPoint = OpenLayers.Class({
+		jobject: null,		// The wrapped dom element (as returned by ctor).
+		emsMap: null,
+		markerPoint: null,
+		
+		/** Create a new point and insert it in the list so it's positioned before
+		 * the specified sibling. If the sibling is null, insert at end of list.
+		 * The value returned by this ctor is a jQuery object which has .data('model')
+		 * that returns this object.
+		 * If a non-null emsMap and lonLat are specified, then add a new marker to the map.
+		 * Otherwise focus in the input and wait for address to geocode.
+		 * The optional text and speed may be supplied by the file loader, in which case, the
+		 * new AddressPoint will use these values as specified.  In particular, there will be
+		 * no attempt to reverse geocode the specified lonLat.
+		 */
+		initialize: function(emsMap, lonLat, text, speed, noGPS) {
+			this.emsMap = emsMap;
+			html = 
+				"<div class='point addressPoint' >  \n" +
+				"    <button class='mediumText left' type='button' id='insert' > \n" +
+				"        <span class='button-text'>Insert</span> \n" +
+				"    </button> \n" +
+				"    <input class='largeText' id='pointInput' > \n" +
+				"    <select class='info mediumText' name='speed' id='speedSelect' > \n" +
+				"	     <option value='30'>30km/h</option> \n" +
+				"		 <option value='60'>60km/h</option> \n" +
+				"		 <option value='80'>80km/h</option> \n" +
+				"   	 <option value='110'>110km/h</option> \n" +
+				"    </select> \n" +
+				"    <button class='mediumText right' type='button' id='remove' > \n" +
+				"        <span class='button-text'>Remove</span> \n" +
+				"    </button> \n" +
+				"    <input type='checkbox' style='width:12px;height:12px;margin-right:14px;margin-top:10px;float:right;' id='noGPS' > \n" +
+				"    <div class='smallText' style='height:15px;width:47px;margin-top:11px;float:right;' >\n" +
+				"        <span class='smallText'>NO GPS</span> \n" +
+				"    </div>\n" +
+				"</div>  \n"
+
+			this.jobject = $(html);
+			this.jobject.data('model', this);
+			
+			this.jobject.find('#insert').click(jQuery.proxy(function() {
+				// Insert a new Point before this one, with empty value.
+				var ap = new App.AddressPoint(this.emsMap, null);
+				this.jobject.before(ap.jobject);
+			}, this));
+			this.jobject.find('#remove').click(jQuery.proxy(function() {
+				// Remove this entry from the list, destroying the 
+				// marker and triggering onMarkerDestroy event.
+				if (this.markerPoint) {
+					this.markerPoint.destroy();
+					this.markerPoint = null;
+				}
+				this.jobject.remove();
+			}, this));
+			this.jobject.find('#pointInput').keypress(jQuery.proxy(function(event) {
+				if (event.which == 13) {
+					var text = this.jobject.find('#pointInput').val();
+					this.textEntered(text);
+				}
+			}, this));
+			this.jobject.find('#speedSelect').click(jQuery.proxy(function() {
+				this.setSpeed();		// Pass updated speed value to the MarkerPoint (if existing).
+			}, this));
+			this.jobject.find('#noGPS').click(jQuery.proxy(function() {
+				if (this.markerPoint) {
+					this.markerPoint.setNoGPS(this.getNoGPSCheckbox());
+				}
+			}, this));
+			this.setNoGPSCheckbox(noGPS);
+			if (lonLat) {
+				this.createOrMoveMarkerPoint(lonLat);
+				// If the text argument was provided (by a load operation) then don't rev geocode.
+				if (!text) {
+					this.findAddressAtLonLat(lonLat);
+				} else {
+					this.setText(text);					
+				}
+			}
+			if (speed) {
+				this.jobject.find('#speedSelect').val(speed);
+				this.setSpeed();
+			}
+			return this;
+		},
+		
+		getNoGPSCheckbox: function() {
+			return this.jobject.find('#noGPS').is(':checked');
+		},
+		setNoGPSCheckbox: function(noGPS) {
+			if (!noGPS) {
+				this.jobject.find('#noGPS').removeAttr('checked');
+			} else {
+				this.jobject.find('#noGPS').attr('checked', '');
+			}
+		},
+		
+		// Ensures markerPoint exists (and has move handlers registered) 
+		// and moves it also setting the display text from the lonLat.
+		createOrMoveMarkerPoint: function(lonLat) {
+			if (!this.markerPoint) {
+				this.markerPoint = new App.MarkerPoint(this.emsMap, lonLat);
+				this.setSpeed();		// Pass speed value to the new MarkerPoint.
+				this.markerPoint.setNoGPS(this.getNoGPSCheckbox());	
+				
+ 				this.markerPoint.registerMarkerHandler({
+					// While dragging, update the text display.
+					'onMarkerDragging' : jQuery.proxy(function(event) {
+						this.setTextAsPoint(event.lonLat);
+					}, this),  
+					// When finished dragging, update text and attempt to rev geocode.
+					'onMarkerDragComplete' : jQuery.proxy(function(event) {
+						this.setTextAsPoint(event.lonLat);
+						this.findAddressAtLonLat(event.lonLat);
+					}, this)
+				});
+ 				
+				// The following looks for the new element's DOM siblings, which are only discoverable
+				// once the new element has been placed in the DOM. If this call to createOrMove...
+				// has come from the ctor, then the new element won't be in the DOM yet (that will occur
+				// once the ctor returns, and the call to linkIntoRoute will happen then, for those instances).
+				// If this call to createOrMove... has come from textEntered() then the element must be in
+				// the DOM, as so the following call will operate as required.
+ 				this.linkIntoRoute();
+				
+			} else {
+				this.markerPoint.moveToLonLat(lonLat);
+			}
+			this.setTextAsPoint(lonLat);
+			this.markerPoint.panIntoViewport();
+		},
+		
+		setSpeed: function() {
+			if (this.markerPoint) {
+				var speed = this.jobject.find('select#speedSelect').val();
+				this.markerPoint.setSpeed(speed);
+			}
+		},
+		getSpeed: function() {
+			return this.markerPoint ? this.jobject.find('select#speedSelect').val() : '';
+		},
+
+		// Convert the lonLat to mercator/wgs84 and display its lat and lon in the text field.
+		// Convert from EMS.Projection.GEOGRAPHICAL to EMS.Projection.SPHERICAL_MERCATOR.
+		// Ref: transform(EMS.Projection.GEOGRAPHICAL, EMS.Projection.SPHERICAL_MERCATOR)
+		setTextAsPoint: function(lonLat) {
+			lonLat = lonLat.asWGS84();	
+			var text = lonLat.lat + ', ' + lonLat.lon;		// This format can be pasted into google search.
+			this.setText(text);
+		},
+		
+		setText: function(text) {
+			this.jobject.find('#pointInput').val(text);
+		},
+		getText: function() {
+			return this.jobject.find('#pointInput').val();
+		},
+		
+		// Use entered data: if it's lat lon '-37.85144730664349, 145.03004676453202' then
+		// position the marker (creating if necessary) and then try to reverse geocode.
+		textEntered: function(text) {
+			var words = text.split(',');
+			if (words == null || words.length != 2) {
+				words = text.split(' ');
+			}
+			if (words != null && words.length == 2) {
+				var lat = this.parseFloat(words[0]);
+				var lon = this.parseFloat(words[1]);
+			}
+			if (lat && lon) {
+				var streetPoint = {'lon': lon, 'lat': lat};
+				var lonLat = new EMS.LonLat(streetPoint);
+				this.createOrMoveMarkerPoint(lonLat);
+				this.findAddressAtLonLat(lonLat);
+			} else {
+				// Since we dont have a lat lon, just geocode the complete text.
+				// First try the full geocode and if that don't work, use the suggestion sevice.
+				// Temporarily store the text-query string in the global app object for use.
+				app.text = text;
+				app.geocodeService.geocode(app.text, jQuery.proxy(function(response, status) {
+					if (status == EMS.Status.OK) {
+						if (response.results.length > 0) {
+							this.setLonLatAndAddressFromResult(response.results[0]);
+						} else {
+							// Try suggestions service.
+							app.suggestService.suggest(app.text, jQuery.proxy(function(response, status) {
+								if(status == EMS.Status.OK) {
+									var suggestions = response.suggestions;
+									if (suggestions.length <= 0) {
+										alert('no suggestions found for: ' + app.text);
+										this.setText('');
+									} else {
+										var firstId = suggestions[0].id;
+										app.detailsService.find(firstId, jQuery.proxy(function(response, status) {
+											if (status == EMS.Status.OK) {
+												this.setLonLatAndAddressFromResult(response);
+										    } else  {
+												alert('detailsService.find(' + app.text + ') error: ' + response.message);
+												this.setText('');
+										    }
+										}, this));
+									}
+								} else {
+									alert('suggestService.suggest(' + app.text + ') error: ' + response.message);
+									this.setText('');
+								}
+							}, this));
+						}
+					} else {
+						alert('geocodeService.geocode(' + app.text + ') error: ' + response.message);
+						this.setText('');
+					}
+				}, this));
+			}
+		},
+		
+		parseFloat: function(text) {
+			var rexp = new RegExp(/^[-+]?[0-9]*\.?[0-9]+$/).exec($.trim(text));
+			return (rexp.length == 1) ? rexp[0] : null;
+		},
+		
+		setLonLatAndAddressFromResult: function(response) {
+	        var lonLat = null;
+			var doSnap = $('#snapToStreetPoint').attr('checked');
+			if (doSnap) {
+				lonLat = new EMS.LonLat(response.streetPoint);
+			} else {
+				lonLat = new EMS.LonLat(response.centerPoint);
+			}
+			this.createOrMoveMarkerPoint(lonLat);
+			this.setText(response.address.toString());
+		},
+		
+		// Perform a reverse geocode from this lonLat (after first converting to wgs84)
+		// and if the result is OK, move the marker (which must already exist) to the 
+		// street point (only if the 'road' feature is selected).  Also update the display 
+		// text with the address string and pan to keep the new position visible.
+		findAddressAtLonLat: function(lonLat) {
+			var revGeoFeature = $('select#revGeoFeature').val();
+			if (revGeoFeature == 'dont') {
+				return;
+			}
+			lonLat = lonLat.asWGS84();
+			var options = {
+				'feature': revGeoFeature 
+			};
+			app.geocodeService.reverse(lonLat, jQuery.proxy(function(response, status) {
+				if (status == EMS.Status.OK && response.results.length > 0) {
+					var text = response.results[0].address.toString();
+					this.setText(text);
+					
+					var doSnap = $('#snapToStreetPoint').attr('checked');
+					if (doSnap) {
+						var lonLat = new EMS.LonLat(response.results[0].streetPoint);
+						this.markerPoint.moveToLonLat(lonLat);
+						this.markerPoint.panIntoViewport();
+					}
+				} else {
+					alert('geocodeService.reverse error: ' + response.message);
+				}
+			}, this), options);
+		},
+		
+		// This function links the markerPoint into one or two other marker points,
+		// and should only be called when the markerPoint is first created. It
+		// relies on the point list div to locate previous and next points. 
+		linkIntoRoute: function() {
+			// Link in the route segments.
+			if (!this.markerPoint) {
+				return;
+			}
+			var pointA = this.getPrevOrNext(false);
+			var pointB = this.getPrevOrNext(true);
+			this.markerPoint.insertBetweenPoints(pointA, pointB);
+		},
+		
+		/* Looks for the AddressPoint either prev or next from this one, 
+		 * that has a non-null markerPoint and returns that markerPoint,
+		 * otherwise returns null.
+		*/
+		getPrevOrNext: function(doNext) {
+			var addressPoint = this;
+			var nextMarkerPoint = null;
+			while (!nextMarkerPoint) {
+ 				var next = doNext ? addressPoint.jobject.next() : addressPoint.jobject.prev();		// This could be an AddressPoint's div
+ 				if (next.length == 0) {
+ 					break;
+ 				}
+ 				addressPoint = $(next).data('model');
+ 				if (!addressPoint) {					// Not an AddressPoint
+ 					break;								// End of list has been reached, gotta stop.
+ 				}
+ 				nextMarkerPoint = addressPoint.markerPoint;		// May be null; which will keep us looping.
+			}
+			return nextMarkerPoint;
+		}
+	});
+	
+	/*  
+	 */
+	App.MarkerPoint = OpenLayers.Class({
+		emsMap: null,
+		emsMarker: null,
+		markerHandlers: null,
+		speed: null,				// In metres/millisecond
+		noGPS: null,				// Set by the AddressPoint
+
+		// Create a new marker for this point, and arrange for onDragMove and onDragComplete callbacks to be called.
+		initialize: function(emsMap, lonLat) {
+			this.emsMap = emsMap;
+			var icon = new EMS.Icon('http://wiki.sensis.com.au/download/attachments/64401033/rect3818-7-0.png', 
+					new OpenLayers.Size(15,15), new OpenLayers.Pixel(-7, -7), null, 3);
+			this.emsMarker = new EMS.Marker(lonLat, icon);
+			this.emsMarker.markerPoint = {				// Called by the EMS dragging control.
+				'onDragMove': jQuery.proxy(function(lonLat) {
+					this.notifyHandlers('onMarkerDragging', lonLat);			// Tells AddressPoint and RouteSegment.
+				}, this),		
+				'onDragComplete': jQuery.proxy(function(lonLat) {
+					this.notifyHandlers('onMarkerDragComplete', lonLat);		// Tells AddressPoint.
+					this.notifyHandlers('onMarkerMoveComplete', lonLat);		// Tells RouteSegment.
+				}, this)
+			};
+			this.emsMap.addMarker(this.emsMarker);
+			this.markerHandlers = [];
+			
+			$('#pointCount').text(++(app.pointCount));
+			this.setNoGPS(false);
+		},
+
+		setNoGPS: function(noGPS) {
+			this.noGPS = noGPS;
+		},
+		getNoGPS: function() {
+			return this.noGPS;
+		},
+		setSpeed: function(speed) {
+			this.speed = speed * 1000 / (60 * 60 * 1000);
+			console.log('speed: ' + speed + ' ==> ' + this.speed);
+		},
+		
+		// Remove this point, first notifying handlers.
+		destroy: function() {
+			this.emsMap.removeMarker(this.emsMarker);
+			this.notifyHandlers('onMarkerDestroy', null);
+			this.emsMarker.destroy();
+			this.removeFromRouteSegments(); 
+			
+			$('#pointCount').text(--(app.pointCount));
+		},
+		
+		// Reposition the existing marker to a new wgs84 latlon. Also trigger a '' 
+		// event for use by handlers other than the AddressPoint (which caused it).
+		moveToLonLat: function(lonLat) {
+			var px = this.emsMap.getLayerPxFromLonLat(lonLat);		// DONT use emsMap.getPixelFromLonLat(lonLat);
+			//var px = this.emsMap.getPixelFromLonLat(lonLat);
+			this.emsMarker.moveTo(px);
+			this.notifyHandlers('onMarkerMoveComplete', lonLat);			// Tells RouteSegment.
+		},
+		
+		panIntoViewport: function() {
+			// TODO - 
+		},
+
+		// handlers are passed event = { 'markerPoint' : this, 'lonLat' : newLonLat }
+		// onMarkerDragging - the marker is being moved by dragging 
+		// onMarkerMoveComplete - the marker was moved (either by dragging or programatically) 
+		// onMarkerDragComplete - only triggered when a move by dragging has finished
+		registerMarkerHandler: function(markerHandler) {
+			if (!markerHandler) {
+				alert("can't registerMarkerHandler undefined markerHandler - duh!");
+			}
+			if (this.markerHandlers.indexOf(markerHandler) == -1) {
+				this.markerHandlers.push(markerHandler);
+			}
+		},
+		
+		unregisterMarkerHandler: function(markerHandler) {
+			if (!markerHandler) {
+				alert("can't unregisterMarkerHandler undefined markerHandler - duh!");
+			}
+			var i = this.markerHandlers.indexOf(markerHandler);
+			if (i != -1) {
+				this.markerHandlers.splice(i, 1);
+			}
+		},
+		
+		notifyHandlers: function(eventName, lonLat) {
+			event = {
+				'markerPoint': this,
+				'lonLat': lonLat
+			};
+			for (var h = 0; h < this.markerHandlers.length; h++) {
+				var handler = this.markerHandlers[h];
+				if (handler[eventName]) {
+					handler[eventName](event);
+				}
+			}
+		},
+		
+		/* RouteSegment/MarkerPoint linking/unlinking management.
+		 */
+		routeSegmentPrev: null,
+		routeSegmentNext: null,
+		
+		// Unlink this MarkerPoint from between any Routesegments it may be attached to.
+		// If this point has only a single attached route segment, then just destroy 
+		// that single, linked segment.  Otherwise, create a new segment to replace
+		// both the prev and next and initialize it with the other end points of
+		// those segments.  This handles all segment operations associated with a
+		// delete of this point.
+		removeFromRouteSegments: function() {
+			if (!this.routeSegmentPrev && !this.routeSegmentNext) {
+				// This point is not linked to any route segments. Nothing to do.
+				return;
+			}
+			var pointA = null;
+			if (this.routeSegmentPrev) {
+				// Destroy previous segment, hang onto the prev point for possible relinking.
+				pointA = this.routeSegmentPrev.markerPointA;
+				this.routeSegmentPrev.destroy();
+			}
+			var pointB = null;
+			if (this.routeSegmentNext) {
+				// Destroy next segment, hang onto the next point for possible relinking.
+				pointB = this.routeSegmentNext.markerPointB;
+				this.routeSegmentNext.destroy();
+			}
+			if (pointA && pointB) {
+				// Link up the two, now-adjacent points with a new segment.
+				new App.RouteSegment(this.emsMap, pointA, pointB);
+			}
+		},
+		
+		// This instance of MarkerPoint will be inserted inbetween the two specified
+		// existing markerPoints (either or both of which may be null).  If these points
+		// are not null, then it is assumed that they are adjacent, and the route already
+		// attached to them will be  destroyed, and two new route segments created.
+		insertBetweenPoints: function(pointA, pointB) {
+			if (this.routeSegmentNext || this.routeSegmentPrev) {
+				alert("This point already linked");
+				return;
+			}
+			if (!pointA && !pointB) {
+				return;
+			}
+			if (pointA && pointB) {
+				// We are inserting this segment between the existing two
+				// which MUST be linked by a single segment - check this.
+				var oldNextSegment = pointA.routeSegmentNext;
+				var oldPrevSegment = pointB.routeSegmentPrev;
+				if (!oldNextSegment || !oldPrevSegment || oldNextSegment != oldPrevSegment) {
+					alert("Can't insert this point bewteen 2 non-linked-together points");
+					return;
+				}
+				// Destroy will unregister the marker handlers, and clear the prev/next references.
+				oldPrevSegment.destroy();
+			} 
+			if (pointA) {
+				// We are appending this marker after the prev one.
+				// The RouteSegment ctor checks all references.
+				new App.RouteSegment(this.emsMap, pointA, this);
+			} 
+			if (pointB) {
+				// We are prepending this marker before the next one.
+				new App.RouteSegment(this.emsMap, this, pointB);
+			}
+		}
+		
+	});
+		
+	/**
+	 * Class: RouteSegment
+	 */
+	App.RouteSegment = OpenLayers.Class({
+		markerPointA: null,
+		markerPointB: null,
+		emsMap: null,			// Not used ? - check this
+		vectorFeatures: null,
+		points: null,			// Array of OpenLayers.Geometry.Point
+		
+		// Place this route segment to link the two marker points,
+		// whose prev/next references will be directed to this.
+		initialize: function(emsMap, markerPointA, markerPointB) {
+			if (markerPointA.routeSegmentNext || markerPointB.routeSegmentPrev) {
+				alert("Can't link segment to already linked point");
+			}
+			this.emsMap = emsMap;
+			this.markerPointA = markerPointA;
+			this.markerPointB = markerPointB;
+			this.markerPointA.routeSegmentNext = this;
+			this.markerPointB.routeSegmentPrev = this;
+			
+			this.vectorFeatures = [];
+			this.points = [];
+			
+			this.markerHandler = {
+				// While dragging, remove out the original route and rubberband the temp route.
+				'onMarkerDragging' : jQuery.proxy(function(event) {
+					this.removeVectorFeatures();
+					var geoPoints = [
+                        new OpenLayers.Geometry.Point(this.markerPointA.emsMarker.lonlat.lon, this.markerPointA.emsMarker.lonlat.lat),
+                        new OpenLayers.Geometry.Point(this.markerPointB.emsMarker.lonlat.lon, this.markerPointB.emsMarker.lonlat.lat)
+					];
+					var geometry = new OpenLayers.Geometry.LineString(geoPoints);
+	            	var vector = new OpenLayers.Feature.Vector(geometry, null, app.routeLineStyle);
+	            	this.vectorFeatures.push(vector);
+					app.vectorLayer.addFeatures(this.vectorFeatures);
+				}, this),  
+				// When finished dragging, fetch new route line.
+				'onMarkerMoveComplete' : jQuery.proxy(function(event) {
+					this.draw();
+				}, this)
+			};
+			this.markerPointA.registerMarkerHandler(this.markerHandler);
+			this.markerPointB.registerMarkerHandler(this.markerHandler);
+			this.draw();
+			
+			$('#segmentCount').text(++(app.segmentCount));
+		},
+		
+		// Unregister listeners to the markers and remove
+		// the route segment from the map.
+		destroy: function() {
+			this.markerPointA.unregisterMarkerHandler(this.markerHandler);
+			this.markerPointB.unregisterMarkerHandler(this.markerHandler);
+			this.markerPointA.routeSegmentNext = null;
+			this.markerPointB.routeSegmentPrev = null;
+
+			this.markerPointA = null;
+			this.markerPointB = null;
+			this.markerHandler = null;
+			
+			this.removeVectorFeatures();
+			
+			$('#segmentCount').text(--(app.segmentCount));
+		},
+		
+		/* Remove all vector features from the vector layer and clear the vectorFeatures array.
+		 */
+		removeVectorFeatures: function() {
+            if (this.vectorFeatures && this.vectorFeatures.length > 0) {
+	            app.vectorLayer.removeFeatures(this.vectorFeatures);
+	            for (v = 0; v < this.vectorFeatures.length; v++) {
+	            	this.vectorFeatures[v].destroy();
+	            }
+	            this.vectorFeatures = [];
+            }
+			this.points = [];
+		},
+		
+		draw: function() {
+			this.removeVectorFeatures();
+			var waypoints = [
+				this.markerPointA.emsMarker.lonlat.asWGS84(),
+				this.markerPointB.emsMarker.lonlat.asWGS84()
+			];
+			app.routeService.route(waypoints, jQuery.proxy(function(response, status) {
+		        if (status == EMS.Status.OK) {
+		            for (legIndex = 0; legIndex < response.route.legs.length; legIndex++) {
+		            	var leg = response.route.legs[legIndex];
+			            for (segIndex = 0; segIndex < leg.segments.length; segIndex++) {
+			            	var seg = leg.segments[segIndex];
+			            	if (seg.geometry) {
+				            	//var geometry = seg.geometry.transform(EMS.Projection.GEOGRAPHICAL, EMS.Projection.SPHERICAL_MERCATOR);
+				            	this.appendPoints(seg.geometry.components);
+				            	var vector = new OpenLayers.Feature.Vector(seg.geometry, null, app.routeLineStyle);
+				            	this.vectorFeatures.push(vector);
+			            	}
+			            }
+		            }
+		            app.vectorLayer.addFeatures(this.vectorFeatures);
+		        } else {
+					alert('routeService.route error: ' + response.message);
+		        }
+		    }, this)); 
+		},
+		
+		/* Append each point from the components list onto the points member. The first point in the list is
+		 * treated differently: it is compared to the last element of points (placed there by the previous
+		 * call to append), which it is expected to equal, and is therefore not appended.
+		 */
+		appendPoints: function(components) {
+        	// Collect a list of {x,y,t} objects, one for each 
+        	// leg.segments
+        	// geometry.components[0].y
+        	// OpenLayers.Geometry.Point
+			
+        	console.log('geometry length = ' + components.length);
+        	if (components.length == 0) {
+        		return;
+        	}
+        	// The last component of each geometry is the same x,y as the first component of the next geometry.
+        	if (this.points.length > 0) {
+        		var lastPoint = this.points.pop();
+        		if (!app.pointList.isOverlapping(lastPoint, components[0])) {
+        			this.points.push(lastPoint);
+        		}
+ 			}
+        	for (c = 0; c < components.length; c++) {
+        		this.points.push(components[c]);
+        	}
+		}
+	
+	});
+	
+	/**
+	 * Class: ContextPopup - Supports a single context popup for the map.
+	 */
+	App.ContextPopup = OpenLayers.Class({
+		emsMap: null,
+		emsPopup: null,				// May be null, otherwise is an EMS.Popup		
+		
+		/**
+		 * Parameters:
+		 * emsMap - EMS.Map on which to track the mouse position and perform the popup.
+		 */
+		initialize: function(emsMap) {
+			this.emsMap = emsMap;
+		    // Ref http://stackoverflow.com/a/4986536
+			var contextMenuControl = new EMS.Control.ContextMenu(this, {
+				showMenu: jQuery.proxy(this.showContextMenu, this),
+				hideMenu: jQuery.proxy(this.hideContextMenu, this)
+			}, []);
+			this.emsMap.addControl(contextMenuControl);
+			contextMenuControl.activate();
+		},
+		
+		showContextMenu: function(lonLat) {  
+			if (this.emsPopup) {
+				this.emsPopup.hide();
+				this.emsMap.removePopup(this.emsPopup);
+				this.emsPopup = null;
+			}
+			app.lonLat = lonLat;
+			// User has right-clicked the map, so popup an option menu using the current mousePosition. 
+			//var point = new EMS.LonLat(this.mousePosition.lon, this.mousePosition.lat);
+			var html = 
+				"<div id='contextPopup'> " + 
+				" <button id='start' type='button' class='left'> " + 
+				"  <span class='button-text'>Add Start</span> " + 
+				" </button>	" + 
+				" <button id='waypoint' type='button' class='left'> " + 
+				"  <span class='button-text'>Add Waypoint</span> " + 
+				" </button>	" + 
+				" <button id='finish' type='button' class='left'> " +
+				"  <span class='button-text'>Add Finish</span> " + 
+				" </button>	" + 
+				" <button id='close' type='button' class='left'> " +
+				"  <span class='button-text'>Close</span> " + 
+				" </button>	" + 
+				"</div> ";
+			
+			this.emsPopup = new EMS.Popup("popup-div", app.lonLat, new OpenLayers.Size(325, 37), html, null, false);
+			this.emsMap.addPopup(this.emsPopup);
+			this.emsPopup.show();
+			app.pointList.enable(false);
+
+			// With each button in the popup, disable if not allowed,
+			// and bind to the pointList addPoint function.
+			var contextPopup = this;
+			
+			$('#contextPopup').find('button').bind('click', function() {
+				app.pointList.addPoint($(this).attr('id'), app.lonLat);
+				app.pointList.enable(true);
+				contextPopup.emsPopup.hide();
+				contextPopup.emsMap.removePopup(contextPopup.emsPopup);
+				contextPopup.emsPopup = null;
+			}).each(function() {
+				if (!app.pointList.allowed(this.id)) {
+					$(this).attr('disabled', '');
+				}
+			})
+			
+		},
+		
+		hideContextMenu: function() {    //user released the mouse button
+		}
+
+	});
+	
+    window.onload = function() {
+		// Work around the EMS authentication lol.
+        EMS.Util.getDomain = function() { return "localhost"; }
+		 
+		if (!window.console) console = {};
+		console.log = console.log || function(){};
+		
+		this.app = new App.RouteGen("map-div");
+		
+		popupController.init();
+		
+	}
+			
+			    
+	/*
+	getCenterInDegrees: function() {
+        return this.map.getCenter().transform(EMS.Projection.SPHERICAL_MERCATOR, EMS.Projection.GEOGRAPHICAL);
+    }
+ 
+    transformToMeters: function(geoData) {
+       return geoData == null? null : geoData.transform(EMS.Projection.GEOGRAPHICAL, EMS.Projection.SPHERICAL_MERCATOR);
+    }
+    */
+    
+			 
+		</script>
+		
+	</body>
+</html>

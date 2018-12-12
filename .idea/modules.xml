@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/fake/fake.iml" filepath="$PROJECT_DIR$/fake/fake.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fake-bridge/fake-bridge.iml" filepath="$PROJECT_DIR$/fake-bridge/fake-bridge.iml" />
+      <module fileurl="file://$PROJECT_DIR$/go-bridge/go-bridge.iml" filepath="$PROJECT_DIR$/go-bridge/go-bridge.iml" />
+    </modules>
+  </component>
+</project>

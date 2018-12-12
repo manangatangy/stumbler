@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="au.com.sensis.whereis.locationsimulator"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15" />
+
+	<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />	
+	
+    <application
+        android:icon="@drawable/fake"
+        android:label="@string/app_name" >
+        
+        <activity
+            android:name=".SimActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize"
+            >
+        </activity>
+        
+		<service 
+		    android:name=".service.SimService"
+		    android:label="LocationSimulatorService"
+		    android:exported="false" 
+		    >
+	    </service>
+
+    </application>
+
+</manifest>

@@ -1,0 +1,98 @@
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+    <LinearLayout 
+        android:id="@+id/leftLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+	    android:orientation="vertical" >
+	    <TextView 
+	        android:id="@+id/textViewModeN"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="LocSim"
+	        android:textSize="10sp"
+	        android:gravity="center_horizontal|bottom"
+	        style="@style/NotificationTitle" />
+	    <ImageView 
+	        android:id="@+id/iconImage"
+	        android:layout_width="wrap_content"
+	        android:layout_height="0dip"
+	        android:layout_weight="1"
+	        android:scaleType="center"
+	        android:src="@drawable/fake" />
+    </LinearLayout>
+    
+    <ImageView
+        android:id="@+id/imageViewSlowerN"
+        android:layout_width="0dip"
+        android:layout_weight="0.01"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_menu_tran_slower" />
+    <ImageView
+        android:id="@+id/imageViewStartN"
+        android:layout_width="0dip"
+        android:layout_weight="0.01"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_menu_tran_start" />
+    <ImageView
+        android:id="@+id/imageViewPauseN"
+        android:layout_width="0dip"
+        android:layout_weight="0.01"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_menu_tran_pause" />
+    <ImageView
+        android:id="@+id/imageViewStopN"
+        android:layout_width="0dip"
+        android:layout_weight="0.01"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_menu_tran_stop" />
+    <ImageView
+        android:id="@+id/imageViewFasterN"
+        android:layout_width="0dip"
+        android:layout_weight="0.01"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_menu_tran_faster" />
+        
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+        <TextView 
+            android:id="@+id/textViewStateN"
+            android:layout_width="wrap_content"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:layout_gravity="right"
+            android:paddingRight="5dip"
+            android:text="DISCONNECTED" />
+        <TextView
+            android:id="@+id/textViewElapsedN"
+            android:layout_width="wrap_content"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:layout_gravity="right"
+            android:paddingRight="5dip"
+            android:text="00:10:30" />
+        <TextView
+            android:id="@+id/textViewCountN"
+            android:layout_width="wrap_content"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:layout_gravity="right"
+            android:paddingRight="5dip"
+            android:text="10000" />
+        <TextView
+            android:id="@+id/textViewDistanceN"
+            android:layout_width="wrap_content"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:layout_gravity="right"
+            android:paddingRight="5dip"
+            android:text="2340011 m" />
+    </LinearLayout>
+	        	        
+</LinearLayout>

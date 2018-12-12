@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    >
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" 
+            android:orientation="vertical" 
+            >
+	        <LinearLayout
+	       		android:layout_width="match_parent"
+	       		android:layout_height="100dip"
+	       		android:orientation="horizontal"
+	       		android:background="@android:color/darker_gray"
+	       		android:gravity="center" 
+	       		>
+	    		<ImageView
+	        		android:id="@+id/imageView1"
+	        		android:layout_width="match_parent"
+	        		android:layout_height="match_parent"
+	        		android:scaleType="fitCenter"
+	        		android:src="@drawable/fake_gps" 
+	        		/>
+	   		</LinearLayout>
+			    
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+	            android:text="Filename (for record/playback):"
+	            android:textAppearance="?android:attr/textAppearanceMedium" 
+	            />
+	        <LinearLayout 
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:orientation="horizontal" 
+	            >
+		        <EditText
+			        android:id="@+id/editTextFilename"
+		            android:layout_width="0dip"
+		            android:layout_height="wrap_content"
+		            android:layout_weight="1"
+		            android:layout_marginLeft="40dip"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+		            />
+		        <Button
+			        android:id="@+id/buttonBrowse"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:text="Browse"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+		            android:onClick="onBrowseButtonClicked"
+		            />
+	        </LinearLayout>
+			        
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+	            android:text="Location File type:"
+	            android:textAppearance="?android:attr/textAppearanceMedium" 
+	            />
+			<RadioGroup 
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+	            android:layout_marginLeft="40dip"
+			    android:orientation="vertical"
+			    >
+			    <RadioButton android:id="@+id/radioFileTypeGpx"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:text="GPX"
+			        android:onClick="onRadioButtonClicked"
+			        />
+			    <RadioButton android:id="@+id/radioFileTypeCustom"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:text="CUSTOM (json)"
+			        android:onClick="onRadioButtonClicked"
+			        />
+			</RadioGroup>			        
+
+	        <TextView android:id="@+id/textViewRecordAccuracy"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+	            android:text="Extra attributes to record:"
+	            android:textAppearance="?android:attr/textAppearanceMedium" 
+	            />
+			<CheckBox android:id="@+id/checkboxRecordAccuracy"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+	            android:layout_marginLeft="40dip"
+		        android:text="Accuracy"
+		        android:onClick="onCheckboxClicked"
+		        />
+			<CheckBox android:id="@+id/checkboxRecordAltitude"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+	            android:layout_marginLeft="40dip"
+		        android:text="Altitude"
+		        android:onClick="onCheckboxClicked"
+		        />
+			<CheckBox android:id="@+id/checkboxRecordBearing"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+	            android:layout_marginLeft="40dip"
+		        android:text="Bearing"
+		        android:onClick="onCheckboxClicked"
+		        />
+			<CheckBox android:id="@+id/checkboxRecordSpeed"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+	            android:layout_marginLeft="40dip"
+		        android:text="Speed"
+		        android:onClick="onCheckboxClicked"
+		        />
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+	            android:text="Location provider used during recording:"
+	            android:textAppearance="?android:attr/textAppearanceMedium" 
+	            />
+	        
+			<RadioGroup 
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+	            android:layout_marginLeft="40dip"
+			    android:orientation="vertical"
+			    >
+			    <RadioButton android:id="@+id/radioProviderTypeGps"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:text="GPS"
+			        android:onClick="onRadioButtonClicked"
+			        />
+			    <RadioButton android:id="@+id/radioProviderTypeNetwork"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:text="Network"
+			        android:onClick="onRadioButtonClicked"
+			        />
+			</RadioGroup>			        
+
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+	            android:text="Record locations by:"
+	            android:textAppearance="?android:attr/textAppearanceMedium" 
+	            />
+			<RadioGroup 
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+	            android:layout_marginLeft="40dip"
+			    android:orientation="vertical"
+			    >
+			    <RadioButton android:id="@+id/radioRecordByPoll"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:text="Periodic polling"
+			        android:onClick="onRadioButtonClicked"
+			        />
+			    <RadioButton android:id="@+id/radioRecordByCallback"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:text="Callback on change"
+			        android:onClick="onRadioButtonClicked"
+			        />
+			</RadioGroup>			        
+
+			<LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+				android:orientation="horizontal"
+			    >
+		        <TextView
+		            android:layout_width="0dip"
+		            android:layout_weight="1"
+		            android:layout_height="wrap_content"
+	            	android:text="Recording polling period, in milliseconds:"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="top"
+		            />
+		        <EditText
+		        	android:id="@+id/editTextRecordPollingPeriod"
+		            android:layout_width="120dip"
+		            android:layout_height="wrap_content"
+		            android:layout_marginLeft="10dip"
+		            android:inputType="number"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="center_vertical"
+		            />
+			</LinearLayout>
+			
+			<LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+				android:orientation="horizontal"
+		        android:layout_gravity="center_vertical"
+			    >
+		        <TextView
+		            android:layout_width="0dip"
+		            android:layout_weight="1"
+		            android:layout_height="wrap_content"
+	            	android:text="Recording minimum callback period, in milliseconds:"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="top"
+		            />
+		        <EditText
+		        	android:id="@+id/editTextRecordMinCallbackTime"
+		            android:layout_width="120dip"
+		            android:layout_height="wrap_content"
+		            android:layout_marginLeft="10dip"
+		            android:inputType="number"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="center_vertical"
+		            />
+			</LinearLayout>
+			
+			<LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+				android:orientation="horizontal"
+		        android:layout_gravity="center_vertical"
+			    >
+		        <TextView
+		            android:layout_width="0dip"
+		            android:layout_weight="1"
+		            android:layout_height="wrap_content"
+	            	android:text="Recording minimum callback distance in metres:"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="top"
+		            />
+		        <EditText
+		        	android:id="@+id/editTextRecordMinCallbackDistance"
+		            android:layout_width="120dip"
+		            android:layout_height="wrap_content"
+		            android:layout_marginLeft="10dip"
+		            android:inputType="number"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="center_vertical"
+		            />
+			</LinearLayout>
+			
+			<CheckBox android:id="@+id/checkboxBeepOnLocationRecorded"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+	            android:layout_marginTop="10dip"
+	            android:layout_marginLeft="10dip"
+	            android:text="Beep when a new location is recorded"
+		        android:onClick="onCheckboxClicked"
+		        />
+			
+			<LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+				android:orientation="horizontal"
+		        android:layout_gravity="center_vertical"
+			    >
+		        <TextView
+		            android:layout_width="0dip"
+		            android:layout_weight="1"
+		            android:layout_height="wrap_content"
+	            	android:text="Minimum time between location playbacks, in milliseconds:"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="top"
+		            />
+		        <EditText
+		        	android:id="@+id/editTextPlaybackMinPeriod"
+		            android:layout_width="120dip"
+		            android:layout_height="wrap_content"
+		            android:layout_marginLeft="10dip"
+		            android:inputType="number"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="center_vertical"
+		            />
+			</LinearLayout>
+			
+			<CheckBox android:id="@+id/checkboxPlaybackInterpolate"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+	            android:layout_marginTop="10dip"
+	            android:layout_marginLeft="10dip"
+		        android:text="Interpolate between locations during playback"
+		        android:onClick="onCheckboxClicked"
+		        />
+			
+			<LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+				android:orientation="horizontal"
+		        android:layout_gravity="center_vertical"
+			    >
+		        <TextView
+		            android:layout_width="0dip"
+		            android:layout_weight="1"
+		            android:layout_height="wrap_content"
+	            	android:text="Playback interpolation period, in milliseconds:"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="top"
+		            />
+		        <EditText
+	            	android:id="@+id/editTextPlaybackInterpolationPeriod"
+		            android:layout_width="120dip"
+		            android:layout_height="wrap_content"
+		            android:layout_marginLeft="10dip"
+		            android:inputType="number"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="center_vertical"
+		            />
+			</LinearLayout>
+			
+			<LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+				android:orientation="horizontal"
+		        android:layout_gravity="center_vertical"
+			    >
+		        <TextView
+		            android:layout_width="0dip"
+		            android:layout_weight="1"
+		            android:layout_height="wrap_content"
+	            	android:text="Playback period while paused, in milliseconds:"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="top"
+		            />
+		        <EditText
+		            android:id="@+id/editTextPlaybackPeriodWhilePaused"
+		            android:layout_width="120dip"
+		            android:layout_height="wrap_content"
+		            android:layout_marginLeft="10dip"
+		            android:inputType="number"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="center_vertical"
+		            />
+			</LinearLayout>
+			
+			<LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+				android:orientation="horizontal"
+		        android:layout_gravity="center_vertical"
+			    >
+		        <TextView
+		            android:layout_width="0dip"
+		            android:layout_weight="1"
+		            android:layout_height="wrap_content"
+	            	android:text="Playback forward/backward skip time, in milliseconds:"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="top"
+		            />
+		        <EditText
+		            android:id="@+id/editTextPlaybackSkipInterval"
+		            android:layout_width="120dip"
+		            android:layout_height="wrap_content"
+		            android:layout_marginLeft="10dip"
+		            android:inputType="number"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="center_vertical"
+		            />
+			</LinearLayout>
+			
+			<CheckBox android:id="@+id/checkboxPlaybackSynthesizeBearings"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+	            android:layout_marginTop="10dip"
+	            android:layout_marginLeft="10dip"
+	            android:text="Synthesize bearings during playback (if not available)"
+		        android:onClick="onCheckboxClicked"
+		        />
+			
+			<LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+				android:orientation="horizontal"
+		        android:layout_gravity="center_vertical"
+			    >
+		        <TextView
+		            android:layout_width="0dip"
+		            android:layout_weight="1"
+		            android:layout_height="wrap_content"
+		            android:text="Remote server port:"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="top"
+		        	/>
+		        <EditText
+		            android:id="@+id/editTextRemoteServerPort"
+		            android:layout_width="120dip"
+		            android:layout_height="wrap_content"
+		            android:layout_marginLeft="10dip"
+		            android:inputType="number"
+		            android:textAppearance="?android:attr/textAppearanceMedium" 
+					android:layout_gravity="center_vertical"
+		            />
+			</LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;go-bridge&gt;">
+    <CLASSES>
+      <root url="file://$USER_HOME$/Go/src/github.com" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <excluded>
+      <root url="file://$PROJECT_DIR$/go-bridge" />
+      <root url="file://$PROJECT_DIR$/fake" />
+      <root url="file://$PROJECT_DIR$/fake-bridge" />
+    </excluded>
+  </library>
+</component>

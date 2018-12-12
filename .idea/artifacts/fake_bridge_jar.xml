@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="fake-bridge:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/fake_bridge_jar</output-path>
+    <root id="archive" name="fake-bridge.jar">
+      <element id="module-output" name="fake-bridge" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/fake-bridge/libs/gson-2.2.2-javadoc.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/fake-bridge/libs/gson-2.2.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/fake-bridge/libs/commons-lang-2.3.jar" path-in-jar="/" />
+      <element id="dir-copy" path="$PROJECT_DIR$/fake-bridge/web-src" />
+    </root>
+  </artifact>
+</component>
