@@ -1,0 +1,42 @@
+stumbler
+========
+There are three components to this project; the android application (called fake), the javascript webapp
+that shows the map and route, and the web-server java application that bridges between then android app
+and the webapp (this is called the fake-bridge).
+
+The bridge (with entrypoint at au.com.sensis.whereis.fake.bridge.HttpAdbBridge.main) does two things;
+a) it first executes the android tool 'adb', in order to port forward between the android device on port
+<fake-port> (default 7100) and the host computer on port <adb-port> (default 6100).  The 'fake' android
+app is configured to listen on port 7100 for remote commands.
+b) it then runs an http server on port <http-port> (default 5100).  This server is a simple RESTish api
+that supports a few commands, the most important being 'play', which takes values for latitude and longitude
+and sends the json representation via adb to the device, where the listening fake app reads it and sets it
+on the device with au.com.sensis.whereis.locationsimulator.service.location.synchronousSendLocation().
+
+The javascript webapp allows users to view a map (from emsv2) and place route markers on it, interactively
+and using geocoded street addresses. The routes may then be replayed (ie, sent via the fake-bridge to the
+device on which fake is running).  At this point, any location aware app running on the device will behave
+as though the device is at the faked location.  The fake system was originally developed to help with the
+testing of the whereis android application, but all location aware apps (eg google maps) are fooled equally.
+
+The webapp (routegen.html) uses the emsv2 javascript api and also jquery.  It supports route save and reload,
+variable speed (simulated), route-replay pause, and variable replay-period.  It also has a 'no-GPS' feature
+which simulates a missing GPS signal along a route segment.  This is meant to test how the app behaves when
+the GPS signal is temporarily unavailable.
+
+
+http://localhost:7100
+
+getting running
+===============
+1. connect android device via usb to linux host and enable usb-debugging and mock-locations
+in the developer part of the settings.
+2. run the faker run-configuration inside intellij. This will start the app on the device.
+3. on the faker app on the device, press the 'remote' button, the status will be 'disconnected'
+4. run the bridge run-configuration inside intellij. The status of faker app will go to 'connected'
+5. on your browser on the linux host, goto http://localhost:5100/?ems_environment=prod
+6. when the map appears, click the green 'load' button and load the 'twisty-turnie' file
+7. zoom in a bit around malvern east / ashburton
+8. click the orange 'replay' button and then 'start route'
+9. on the device, open google maps (ensure the location is enabled) and observe
+
